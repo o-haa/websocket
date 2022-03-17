@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded',()=>{
+                         
+            const webSocket = new WebSocket("ws://localhost:4000")
+
+            webSocket.onopen = ()=>{
+                console.log('HandShake')
+            }
+
+            const frm = document.querySelector('form')
+            frm.addEventListener('submit',(e)=>{
+                e.preventDefault()
+                const {input}=e.target
+               
+                let data = {
+                    type:'send_msg',
+                    data:{
+                        userid:'oha',
+                        msg:input.value
+                    }
+                }
+
+                webSocket.send(JSON.stringify(data))
+                input.value=''
+                input.focus()
+
+                console.log('hello')
+            })
+     
+
+            webSocket.onmessage = (event) =>{
+                const chat = document.querySelector('#chat')
+                const liElement = document.createElement('li')
+                liElement.innerHTML = JSON.parse(event.data).msg
+                chat.appendChild(liElement)
+                console.log('hello',event.data)
+                
+            }
+        })
+    </script>
+</head>
+<body>
+    <form method="get" action="/">
+        <input type="text" name="input" id="input">
+        <input type="submit" value="send">
+    </form>
+    <ul id="chat">
+
+    </ul>
+</body>
+</html>
